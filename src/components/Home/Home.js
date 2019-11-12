@@ -18,27 +18,29 @@ class Home extends Component {
     searchTerm: ''
   }
 
-            componentDidMount() {
-                this.setState({ loading: true });
-                const endpoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=en-US&page=1`;
-                this.fetchItems(endpoint);
-            }
-        SearchItem = (searchTerm) =>{
-            console.log(searchTerm);
-            let endpoint = '';
-            this.setState({
+  componentDidMount() {
+    this.setState({ loading: true });
+    const endpoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=en-US&page=1`;
+    this.fetchItems(endpoint);
+  }
 
-                movies:[],
-                loading: true,
-                searchTerm
-            })
-            if (searchTerm === ''){
-             endpoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=en-US&page=1`;
-            }else{  
-                endpoint = `${API_URL}search/movie?api_key=${API_KEY}&language=en-us&query=${searchTerm}`;
-            }
-            this.fetchItems(endpoint);
-        }
+  searchItems = (searchTerm) => {
+    console.log(searchTerm);
+    let endpoint = '';
+    this.setState({
+      movies: [],
+      loading: true,
+      searchTerm
+    })
+
+    if (searchTerm === '') {
+      endpoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=en-US&page=1`;
+    } else {
+      endpoint = `${API_URL}search/movie?api_key=${API_KEY}&language=en-US&query=${searchTerm}`;
+    }
+    this.fetchItems(endpoint);
+
+  }
 
   loadMoreItems = () => {
     let endpoint = '';
@@ -70,35 +72,35 @@ class Home extends Component {
   render() {
     return (
       <div className="rmdb-home">
-          {this.state.heroImage ?
-            <div> 
-            <HeroImage
-                    image={`${IMAGE_BASE_URL}${BACKDROP_SIZE}${this.state.heroImage.backdrop_path}`}
-                    title={this.state.heroImage.original_title}
-                    text={this.state.heroImage.overview}
-                />
-                <SearchBar callback={this.searchItems} />
-       </div> : null}
-       <div className="rmdb-home-grid">
-           <FourColGrid
-           header ={this.state.searchTerm? 'search result' : 'Popilar Movies'}
-           loading ={this.state.loading}>
-               {this.state.movies.map ((element, i) =>{
-                   return <MovieThumb
-                   key={i}
-                   clickable={true}
-                   image={element.poster_path ? `${IMAGE_BASE_URL}${POSTER_SIZE}${element.poster_path}` : './images/no_image.jpg'}
-                   movieId={element.id}
-                   movieName={element.original_title}
-                />
-               })}
-           </FourColGrid>
-           {this.state.loading ? <spinner /> : null}
-           {(this.state.currentPage <= this.state.totalPages && !this.state.loading) ?
-           <LoadMoreBtn text="Load More" onClick={this.loadMoreItems} />
-           :null }
-       </div>
-        <Spinner />
+      {this.state.heroImage ?
+        <div>
+          <HeroImage
+            image={`${IMAGE_BASE_URL}${BACKDROP_SIZE}${this.state.heroImage.backdrop_path}`}
+            title={this.state.heroImage.original_title}
+            text={this.state.heroImage.overview}
+          />
+          <SearchBar callback={this.searchItems} />
+        </div> : null }
+        <div className="rmdb-home-grid">
+          <FourColGrid
+            header={this.state.searchTerm ? 'Search Result' : 'Popular Movies'}
+            loading={this.state.loading}
+            >
+            {this.state.movies.map ( (element, i) => {
+              return <MovieThumb
+                        key={i}
+                        clickable={true}
+                        image={element.poster_path ? `${IMAGE_BASE_URL}${POSTER_SIZE}${element.poster_path}` : './images/no_image.jpg'}
+                        movieId={element.id}
+                        movieName={element.original_title}
+                     />
+            })}
+          </FourColGrid>
+          {this.state.loading ? <Spinner /> : null}
+          {(this.state.currentPage <= this.state.totalPages && !this.state.loading) ?
+            <LoadMoreBtn text="Load More" onClick={this.loadMoreItems} />
+            : null }
+        </div>
       </div>
     )
   }
